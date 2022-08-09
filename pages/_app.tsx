@@ -10,7 +10,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import { useEffect } from 'react'
 import Loading from '../components/Loading/Loading'
 import Router from 'next/router'
-import NotAuthorized from '../components/Authen/NotAuthorized'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
   // Use the layout defined at the page level, if available
@@ -54,7 +53,7 @@ const Auth = ({
     }
     // If user is not in the list of roles
     if (roles && !roles.includes(role)) {
-      return <NotAuthorized text="You are not authorized to access this page." />
+      return <>You are not authorized to access this page.</>
     }
     if (parseInt(userInfo.role.id) === 3) {
       if (registerStatus && !registerStatus.includes(register_status)) Router.push('/status')

@@ -1,11 +1,11 @@
 import type { NextPageWithAuth } from 'next'
-import { ButtonPrimary } from '../components/Button'
+// import { ButtonPrimary } from '../components/Button'
 import { useRouter } from 'next/router'
-import { InputPassword, BasicInput } from '../components/Form'
+// import { InputPassword, BasicInput } from '../components/Form'
 import { useEffect, useReducer, useState } from 'react'
 import { getSession, signIn } from 'next-auth/react'
 import Loading from '../components/Loading/Loading'
-import LayoutAuth from '../layouts/LayoutAuth'
+import Layout from '../layouts/Layout'
 import * as yup from 'yup'
 import Link from 'next/link'
 import useTitle from '../hooks/useTitle'
@@ -108,7 +108,7 @@ const Login: NextPageWithAuth = () => {
 
   return (
     <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
-      {loading && <Loading />}
+      {/* {loading && <Loading />}
       <div className="w-full max-w-sm text-center">
         <p className="pb-6 font-normal text-[32px] items-center">ログイン</p>
         <BasicInput
@@ -137,11 +137,11 @@ const Login: NextPageWithAuth = () => {
             </span>
           </Link>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
 
-Login.layout = LayoutAuth
+Login.layout = Layout
 
 export default Login

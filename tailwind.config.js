@@ -11,10 +11,14 @@ module.exports = {
   theme: {
     colors: {
       ...colors,
-      'primary-dark': '#2851E3',
-      'primary-origin': '#3563E9',
-      'surface-dark': '#1B1B1B',
-      'system-grey-500': '#9E9E9E',
+      primary: '#000',
+      secondary: '#7C8DB5',
+      white: '#FFFFFF',
+      border: '#E6EDFF',
+      indigo: '#347AE2',
+      red: '#FF3B30',
+      green: '#34C759',
+      orange: '#FF9500',
     },
     extend: {
       minHeight: {
