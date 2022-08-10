@@ -11,7 +11,7 @@ const SideBar = () => {
     <div
       className={` ${
         open ? 'w-72' : 'w-20 '
-      } h-screen p-5 pt-8 pr-0 relative duration-300 border border-border`}
+      } h-auto min-h-screen p-5 pt-8 pr-0 relative duration-300 border border-border`}
     >
       <div className={`absolute cursor-pointer -right-3 top-9 w-7 ${!open && 'rotate-180'}`}>
         <img src="/imgs/arrow-left.svg" alt="" onClick={() => setOpen(!open)} />
