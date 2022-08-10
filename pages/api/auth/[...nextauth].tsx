@@ -1,44 +1,26 @@
 import NextAuth from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import axios from 'axios'
+import { signOut } from 'next-auth/react'
 export default NextAuth({
   providers: [
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Credentials',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         username: { label: 'Username', type: 'text', placeholder: 'username' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-        // You can also use the `req` object to obtain additional parameters
-        // (i.e., the request IP address)
-        const res: any = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        const res: any = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/signin`, {
           email: credentials?.username,
           password: credentials?.password,
         })
         const user = res.data.data
-        // If no error and we have user data, return it
         if (res.status === 200 && user) {
           return user
         }
-        // Return null if user data could not be retrieved
         return null
       },
-    }),
-    // OAuth authentication providers...
-    GithubProvider({
-      clientId: process.env.GITHUB_ID || '',
-      clientSecret: process.env.GITHUB_SECRET || '',
     }),
   ],
   callbacks: {
@@ -51,7 +33,7 @@ export default NextAuth({
       }
       // Return previous token if the access token has not expired yet
       if (Date.now() > token.accessTokenExpires) {
-        return refreshAccessToken(token)
+        signOut()
       }
       return token
     },
@@ -66,30 +48,3 @@ export default NextAuth({
     signIn: '/login',
   },
 })
-/**
- * Takes a token, and returns a new token with updated
- * `accessToken` and `accessTokenExpires`. If an error occurs,
- * returns the old token and an error property
- */
-async function refreshAccessToken(token: any) {
-  try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/refresh`
-    const response = await axios.post(url, {
-      refresh_token: token.userInfo.refresh_token,
-    })
-    console.log('response', response.data.data)
-    const user = response.data.data
-    if (response.status !== 200) {
-      throw response
-    }
-    token.userInfo.access_token = user.access_token
-    token.userInfo.refresh_token = user.refresh_token
-    token.accessTokenExpires = Date.now() + 86400 * 1000
-    return token
-  } catch (error) {
-    console.error(error)
-    return {
-      error: 'RefreshAccessTokenError',
-    }
-  }
-}
