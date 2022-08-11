@@ -1,17 +1,21 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { MenuItem } from '.'
 import { Menus } from '../../stores/Menus'
 
-const SideBar = () => {
-  const [open, setOpen] = useState<boolean>(true)
+interface Props {
+  open: boolean
+  setOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const SideBar: React.FC<Props> = ({ open, setOpen }) => {
   const [active, setActive] = useState<string>('account')
 
   return (
     <div
       className={` ${
-        open ? 'w-72' : 'w-20 '
-      } h-auto min-h-screen p-5 pt-8 pr-0 relative duration-300 border border-border`}
+        open ? 'w-40' : 'w-20 '
+      } fixed h-auto min-h-screen p-5 pt-8 pr-0 duration-300 border border-border bg-white`}
     >
       <div className={`absolute cursor-pointer -right-3 top-9 w-7 ${!open && 'rotate-180'}`}>
         <img src="/imgs/arrow-left.svg" alt="" onClick={() => setOpen(!open)} />
