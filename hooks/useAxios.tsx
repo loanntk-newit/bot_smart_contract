@@ -1,17 +1,16 @@
 import axios, { Method } from 'axios'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
-import { ListResponse, Response, ResponseError } from '../models'
 
 const useAxios = (url: string, method: Method, body: any) => {
   const baseURL = process.env.NEXT_PUBLIC_API_URL
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState<ListResponse<any> | Response<any>>()
-  const [error, setError] = useState<ResponseError | null>()
+  const [data, setData] = useState()
+  const [error, setError] = useState<any | null>()
   const { status, data: session } = useSession()
 
-  const operation = async () => {
+  const operation = async (param?: string | number | null) => {
     setLoading(true)
     setError(null)
     try {
@@ -26,7 +25,7 @@ const useAxios = (url: string, method: Method, body: any) => {
         }
       }
       const result = await axios.request({
-        url: baseURL + url,
+        url: param ? baseURL + url + '/' + param : baseURL + url,
         method: method,
         data: body,
         ...config,
@@ -42,5 +41,7 @@ const useAxios = (url: string, method: Method, body: any) => {
   }
   return { operation, data, error, loading }
 }
+
+// kdc90298793c8a6d645dee50988cab3e5bd3422ecbe88de7507de5a42ff091hu
 
 export default useAxios

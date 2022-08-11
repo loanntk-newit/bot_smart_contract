@@ -1,15 +1,16 @@
-import { ButtonBorderRed } from '../Button'
+import { ButtonBorderIndigo, ButtonBorderRed } from '../Button'
 import BasicInput from './BasicInput'
 interface Props {
-  id: string | number
+  id: number
   type?: string
   label?: string
   placeholder?: string
-  value?: string
+  value: string
   note?: string
   required?: boolean
-  onChange?: (e: any) => void
-  handleRemove(e: any): void
+  setValue: (e: any) => void
+  handleAdd: (e: string) => void
+  handleRemove(e: number): void
 }
 
 const InputAccount: React.FC<Props> = ({
@@ -20,7 +21,8 @@ const InputAccount: React.FC<Props> = ({
   value,
   note,
   required = false,
-  onChange,
+  setValue,
+  handleAdd,
   handleRemove,
 }) => {
   return (
@@ -32,9 +34,15 @@ const InputAccount: React.FC<Props> = ({
         value={value}
         note={note}
         required={required}
-        onChange={onChange}
+        disabled={!!value}
+        onChange={(e) => setValue(e.target.value)}
       />
-      <ButtonBorderRed style=" max-w-fit mb-3" text="✕" handleClick={() => handleRemove(id)} />
+      {!value && (
+        <ButtonBorderIndigo style=" max-w-fit mb-3" text="✓" handleClick={() => handleAdd(value)} />
+      )}
+      {value && (
+        <ButtonBorderRed style=" max-w-fit mb-3" text="✕" handleClick={() => handleRemove(id)} />
+      )}
     </div>
   )
 }

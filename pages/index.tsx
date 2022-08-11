@@ -2,14 +2,15 @@ import type { NextPageWithAuth } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useReducer, useState } from 'react'
-import { ButtonBorder, ButtonBorderIndigo, ButtonBorderRed } from '../components/Button'
+import { ButtonBorder, ButtonBorderRed } from '../components/Button'
 import { CardBorder } from '../components/Card'
-import { BasicInput, InputAccount } from '../components/Form'
+import { InputAccount } from '../components/Form'
 import Loading from '../components/Loading/Loading'
 import useTitle from '../hooks/useTitle'
 import Layout from '../layouts/Layout'
 import _format from 'date-fns/format'
 import useAxios from '../hooks/useAxios'
+import { UserInfo, Wallet } from '../models'
 
 const initInputState = {
   input: [
@@ -26,9 +27,10 @@ const initInputState = {
 function reducer(state: any, action: any) {
   switch (action.type) {
     case 'refresh-data':
-      state.input = { ...state.input, ...action.values }
+      state.input = { ...action.values }
       return { ...state }
     case 'change':
+      console.log(state.input[action.step][action.key])
       state.input[action.step][action.key] = action.value
       return { ...state }
     case 'validation':
@@ -40,7 +42,7 @@ function reducer(state: any, action: any) {
 
 const Home: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<UserInfo>({
     first_name: 'Peter',
     last_name: 'Wish',
     email: 'kml@gmail.com',
@@ -58,9 +60,9 @@ const Home: NextPageWithAuth = () => {
     operation: postWallets,
     data: createWallet,
     loading: loadedCreate,
-  } = useAxios('/wallets', 'POST', state.input)
+  } = useAxios('/wallets', 'POST', { privateKey: 'QI1W99CYVINBXI1XT5PBTH5RC2WZZ35E45' })
 
-  const { operation: deleteWallet, loading: loadedDelete } = useAxios('/wallets/', 'DELETE', null)
+  const { operation: deleteWallet, loading: loadedDelete } = useAxios('/wallets', 'DELETE', null)
 
   const { operation: deleteAllWallet, loading: loadedDeleteAll } = useAxios(
     '/wallets/all',
@@ -70,11 +72,11 @@ const Home: NextPageWithAuth = () => {
 
   const handleCreateMore = useCallback(() => {
     let items = []
-    let newItem = {
-      commandId: null,
+    let newItem: Wallet = {
       id: new Date().getTime(),
       privateKey: '',
       userId: null,
+      commandId: null,
     }
     for (let i = 0; i < Object.keys(state.input).length; i++) {
       items.push(state.input[i])
@@ -83,17 +85,25 @@ const Home: NextPageWithAuth = () => {
     dispatch({ type: 'refresh-data', values: items })
   }, [state.input])
 
-  const handleRemove = useCallback(
-    (id: string) => {
-      let items = []
-      let newItems = Object.values(state.input).filter((el: any) => el.id !== id)
-      for (let i = 0; i < newItems.length; i++) {
-        items.push(newItems[i])
-      }
-      dispatch({ type: 'refresh-data', values: items })
-    },
-    [state.input]
-  )
+  const handleRemove = (id: number) => {
+    deleteWallet(id)
+    // let items = []
+    // let newItems = Object.values(state.input).filter((el: any) => el.id !== id)
+    // for (let i = 0; i < newItems.length; i++) {
+    //   console.log(newItems[i])
+    //   items.push(newItems[i])
+    // }
+    // dispatch({ type: 'refresh-data', values: items })
+  }
+
+  const handleCreate = (value: string) => {
+    console.log(value)
+    // postWallets()
+  }
+
+  const handleRemoveAll = () => {
+    deleteAllWallet()
+  }
 
   useEffect(() => {
     getWallets()
@@ -130,7 +140,9 @@ const Home: NextPageWithAuth = () => {
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Ngày hết hạn</h3>
-                    <span>{_format(userInfo.expiredAt, 'yyyy-mm-dd HH:mm:ss')}</span>
+                    <span>
+                      {userInfo.expiredAt && _format(userInfo.expiredAt, 'yyyy-mm-dd HH:mm:ss')}
+                    </span>
                   </>
                 </CardBorder>
                 <CardBorder>
@@ -151,7 +163,7 @@ const Home: NextPageWithAuth = () => {
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Action</h3>
-                    <a href="" className="text-indigo">
+                    <a href="/change_password" className="text-indigo">
                       Change Password
                     </a>
                   </>
@@ -171,26 +183,26 @@ const Home: NextPageWithAuth = () => {
                     placeholder="Account privaryKey"
                     value={state.input[i].privateKey}
                     handleRemove={handleRemove}
-                    onChange={(e) =>
+                    handleAdd={handleCreate}
+                    setValue={(e) =>
                       dispatch({
                         type: 'change',
                         step: i,
                         key: 'privaryKey',
-                        value: e.target.value,
+                        value: e,
                       })
                     }
                     required
                   />
                 ))}
-              <ButtonBorder
-                text="Add account"
-                icon="plus"
-                style=" mx-auto"
-                handleClick={handleCreateMore}
-              />
-              <div className="flex flex-col sm:flex-row gap-5 py-8">
-                <ButtonBorderIndigo text="Submit" handleClick={handleCreateMore} />
-                <ButtonBorderRed text="Remove All" handleClick={handleCreateMore} />
+
+              <div className="flex flex-col sm:flex-row justify-between gap-5 py-8">
+                <ButtonBorder text="Add account" icon="plus" handleClick={handleCreateMore} />
+                <ButtonBorderRed
+                  text="Remove All"
+                  style=" max-w-fit"
+                  handleClick={handleRemoveAll}
+                />
               </div>
             </>
           </>
