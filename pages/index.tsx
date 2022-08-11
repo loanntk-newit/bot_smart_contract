@@ -1,15 +1,17 @@
 import type { NextPageWithAuth } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useReducer, useState } from 'react'
-import { ButtonBorder, ButtonBorderIndigo, ButtonBorderRed } from '../components/Button'
+import { useEffect, useReducer, useState } from 'react'
+import { ButtonBorderRed } from '../components/Button'
 import { CardBorder } from '../components/Card'
-import { BasicInput, InputAccount } from '../components/Form'
+import { InputAccount } from '../components/Form'
 import Loading from '../components/Loading/Loading'
 import useTitle from '../hooks/useTitle'
 import Layout from '../layouts/Layout'
 import _format from 'date-fns/format'
 import useAxios from '../hooks/useAxios'
+import { UserInfo, Wallet } from '../models'
+import * as yup from 'yup'
 
 const initInputState = {
   input: [
@@ -26,7 +28,7 @@ const initInputState = {
 function reducer(state: any, action: any) {
   switch (action.type) {
     case 'refresh-data':
-      state.input = { ...state.input, ...action.values }
+      state.input = { ...action.values }
       return { ...state }
     case 'change':
       state.input[action.step][action.key] = action.value
@@ -40,7 +42,7 @@ function reducer(state: any, action: any) {
 
 const Home: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<UserInfo>({
     first_name: 'Peter',
     last_name: 'Wish',
     email: 'kml@gmail.com',
@@ -55,56 +57,64 @@ const Home: NextPageWithAuth = () => {
   } = useAxios('/wallets', 'GET', null)
 
   const {
-    operation: postWallets,
-    data: createWallet,
+    operation: createWallet,
+    data: dataCreate,
     loading: loadedCreate,
-  } = useAxios('/wallets', 'POST', state.input)
+  } = useAxios('/wallets', 'POST', {
+    privateKey: state.input[wallets && Object.keys(wallets).length]?.privateKey,
+  })
 
-  const { operation: deleteWallet, loading: loadedDelete } = useAxios('/wallets/', 'DELETE', null)
+  const {
+    operation: deleteWallet,
+    data: dataDel,
+    loading: loadedDelete,
+  } = useAxios('/wallets', 'DELETE', null)
 
-  const { operation: deleteAllWallet, loading: loadedDeleteAll } = useAxios(
-    '/wallets/all',
-    'DELETE',
-    null
-  )
+  const {
+    operation: deleteAllWallet,
+    data: dataDelAll,
+    loading: loadedDeleteAll,
+  } = useAxios('/wallets/all', 'DELETE', null)
 
-  const handleCreateMore = useCallback(() => {
-    let items = []
-    let newItem = {
-      commandId: null,
-      id: new Date().getTime(),
-      privateKey: '',
-      userId: null,
-    }
-    for (let i = 0; i < Object.keys(state.input).length; i++) {
-      items.push(state.input[i])
-    }
-    items.push(newItem)
-    dispatch({ type: 'refresh-data', values: items })
-  }, [state.input])
+  const handleCreate = () => {
+    let schema = yup.object().shape({
+      privateKey: yup.string().required().label('privateKey'),
+    })
 
-  const handleRemove = useCallback(
-    (id: string) => {
-      let items = []
-      let newItems = Object.values(state.input).filter((el: any) => el.id !== id)
-      for (let i = 0; i < newItems.length; i++) {
-        items.push(newItems[i])
-      }
-      dispatch({ type: 'refresh-data', values: items })
-    },
-    [state.input]
-  )
+    schema
+      .validate(
+        { privateKey: state.input[wallets && Object.keys(wallets).length]?.privateKey },
+        { abortEarly: false }
+      )
+      .then(async () => {
+        dispatch({ type: 'clear-validation' })
+        createWallet()
+      })
+      .catch((err) => {
+        console.error(err)
+        dispatch({ type: 'validation', errors: err.inner })
+      })
+  }
 
   useEffect(() => {
     getWallets()
-  }, [])
+  }, [dataCreate, dataDel, dataDelAll])
 
   useEffect(() => {
-    wallets &&
-      dispatch({
-        type: 'refresh-data',
-        values: wallets,
-      })
+    if (wallets) {
+      let items = []
+      let newItem: Wallet = {
+        id: new Date().getTime(),
+        privateKey: '',
+        userId: null,
+        commandId: null,
+      }
+      for (let i = 0; i < Object.keys(wallets).length; i++) {
+        items.push(wallets[i])
+      }
+      items.push(newItem)
+      dispatch({ type: 'refresh-data', values: items })
+    }
   }, [wallets])
 
   return (
@@ -130,7 +140,9 @@ const Home: NextPageWithAuth = () => {
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Ngày hết hạn</h3>
-                    <span>{_format(userInfo.expiredAt, 'yyyy-mm-dd HH:mm:ss')}</span>
+                    <span>
+                      {userInfo.expiredAt && _format(userInfo.expiredAt, 'yyyy-mm-dd HH:mm:ss')}
+                    </span>
                   </>
                 </CardBorder>
                 <CardBorder>
@@ -151,7 +163,7 @@ const Home: NextPageWithAuth = () => {
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Action</h3>
-                    <a href="" className="text-indigo">
+                    <a href="/change_password" className="text-indigo">
                       Change Password
                     </a>
                   </>
@@ -168,29 +180,34 @@ const Home: NextPageWithAuth = () => {
                     id={state.input[i].id ?? 0}
                     // type="password"
                     label={`Account ${i + 1}: `}
-                    placeholder="Account privaryKey"
+                    placeholder="Account privateKey"
                     value={state.input[i].privateKey}
-                    handleRemove={handleRemove}
-                    onChange={(e) =>
+                    handleRemove={deleteWallet}
+                    handleAdd={handleCreate}
+                    handleChange={(e) =>
                       dispatch({
                         type: 'change',
                         step: i,
-                        key: 'privaryKey',
+                        key: 'privateKey',
                         value: e.target.value,
                       })
                     }
+                    disabled={wallets && !!wallets[i]?.privateKey}
                     required
                   />
                 ))}
-              <ButtonBorder
-                text="Add account"
-                icon="plus"
-                style=" mx-auto"
-                handleClick={handleCreateMore}
-              />
-              <div className="flex flex-col sm:flex-row gap-5 py-8">
-                <ButtonBorderIndigo text="Submit" handleClick={handleCreateMore} />
-                <ButtonBorderRed text="Remove All" handleClick={handleCreateMore} />
+              {state.errors && (
+                <span className="text-red mb-3">
+                  {state.errors?.find((err: any) => err.path === 'privateKey')?.message}
+                </span>
+              )}
+
+              <div className="py-8">
+                <ButtonBorderRed
+                  text="Remove All"
+                  style=" ml-auto mr-0 sm:max-w-fit"
+                  handleClick={() => deleteAllWallet()}
+                />
               </div>
             </>
           </>

@@ -39,7 +39,7 @@ const Login: NextPageWithAuth = () => {
 
   const handleSubmit = async () => {
     setMsg('')
-
+    setLoading(true)
     let schema = yup.object().shape({
       email: yup.string().required().label('Email'),
       password: yup.string().required().label('Password'),
@@ -56,7 +56,7 @@ const Login: NextPageWithAuth = () => {
         })
         if (res?.error) {
           const status = res.status
-          if (status == 401) setMsg('メールアドレスまたはパスワードが間違っています！')
+          if (status == 401) setMsg('Email or password is incorrect!')
           else if (status != 200) setMsg(res.error)
           setLoading(false)
         }
@@ -68,6 +68,7 @@ const Login: NextPageWithAuth = () => {
       .catch((err) => {
         console.error(err)
         dispatch({ type: 'validation', errors: err.inner })
+        setLoading(false)
       })
   }
 
@@ -101,7 +102,7 @@ const Login: NextPageWithAuth = () => {
           onChange={(e) => dispatch({ type: 'change', key: 'password', value: e.target.value })}
           error={state.errors?.find((err: any) => err.path === 'password')?.message}
         />
-        {msg && <div className="text-red-500 mb-3">{msg}</div>}
+        {msg && <div className="text-red mb-3">{msg}</div>}
         <ButtonBorderIndigo
           text={'Login'}
           handleClick={handleSubmit}
