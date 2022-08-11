@@ -18,10 +18,10 @@ const MenuItem: React.FC<Props> = ({ name, icon, display, urls, src, onClick }) 
       }`}
       onClick={onClick}
     >
-      {/* <a href={src ?? '/'} className="flex items-center gap-4"> */}
-      <img src={active ? `/imgs/${icon}-active.svg` : `/imgs/${icon}.svg`} alt={name} />
-      <span className={`${!display && 'hidden'} duration-200 `}>{name}</span>
-      {/* </a> */}
+      <a href={src ?? '/'} className="flex items-center gap-4">
+        <img src={active ? `/imgs/${icon}-active.svg` : `/imgs/${icon}.svg`} alt={name} />
+        <span className={`${!display && 'hidden'} duration-200 `}>{name}</span>
+      </a>
     </li>
   )
 }

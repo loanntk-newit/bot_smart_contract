@@ -6,7 +6,7 @@ const useAxios = (url: string, method: Method, body: any) => {
   const baseURL = process.env.NEXT_PUBLIC_API_URL
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState()
+  const [data, setData] = useState<any>()
   const [error, setError] = useState<any | null>()
   const { status, data: session } = useSession()
 
@@ -41,7 +41,5 @@ const useAxios = (url: string, method: Method, body: any) => {
   }
   return { operation, data, error, loading }
 }
-
-// kdc90298793c8a6d645dee50988cab3e5bd3422ecbe88de7507de5a42ff091hu
 
 export default useAxios

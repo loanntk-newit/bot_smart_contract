@@ -8,7 +8,8 @@ interface Props {
   value: string
   note?: string
   required?: boolean
-  setValue: (e: any) => void
+  disabled?: boolean
+  handleChange: (e: any) => void
   handleAdd: (e: string) => void
   handleRemove(e: number): void
 }
@@ -20,8 +21,9 @@ const InputAccount: React.FC<Props> = ({
   placeholder,
   value,
   note,
+  disabled = false,
   required = false,
-  setValue,
+  handleChange,
   handleAdd,
   handleRemove,
 }) => {
@@ -31,16 +33,16 @@ const InputAccount: React.FC<Props> = ({
         type={type}
         label={label}
         placeholder={placeholder}
-        value={value}
+        value={value ?? ''}
         note={note}
         required={required}
-        disabled={!!value}
-        onChange={(e) => setValue(e.target.value)}
+        disabled={disabled}
+        onChange={handleChange}
       />
-      {!value && (
+      {!disabled && (
         <ButtonBorderIndigo style=" max-w-fit mb-3" text="✓" handleClick={() => handleAdd(value)} />
       )}
-      {value && (
+      {disabled && (
         <ButtonBorderRed style=" max-w-fit mb-3" text="✕" handleClick={() => handleRemove(id)} />
       )}
     </div>
