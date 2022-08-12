@@ -17,10 +17,10 @@ const useAxios = (url: string, method: Method, body: any) => {
       let config
       if (session) {
         const { userInfo }: any = session
-        const access_token = userInfo?.access_token
+        const accessToken = userInfo?.accessToken
         config = {
           headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       }

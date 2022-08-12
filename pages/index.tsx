@@ -1,6 +1,5 @@
 import type { NextPageWithAuth } from 'next'
 import { getSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
 import { useEffect, useReducer, useState } from 'react'
 import { ButtonBorderRed } from '../components/Button'
 import { CardBorder } from '../components/Card'
@@ -42,12 +41,7 @@ function reducer(state: any, action: any) {
 
 const Home: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    first_name: 'Peter',
-    last_name: 'Wish',
-    email: 'kml@gmail.com',
-    expiredAt: 129924492,
-  })
+  const [userInfo, setUserInfo] = useState<UserInfo>()
   useTitle('HOME')
 
   const {
@@ -97,6 +91,16 @@ const Home: NextPageWithAuth = () => {
   }
 
   useEffect(() => {
+    const init = async () => {
+      const session: any = await getSession()
+      if (session && session?.userInfo) {
+        setUserInfo(session.userInfo.user)
+      }
+    }
+    init()
+  }, [])
+
+  useEffect(() => {
     getWallets()
   }, [dataCreate, dataDel, dataDelAll])
 
@@ -122,7 +126,7 @@ const Home: NextPageWithAuth = () => {
       {(loadedGet || loadedCreate || loadedDelete || loadedDeleteAll) && <Loading />}
       <div className="min-h-[calc(100vh-5rem)] ">
         <div className="mb-3">
-          <h1 className="text-2xl">Welcome Back, {userInfo.first_name}</h1>
+          <h1 className="text-2xl">Welcome Back, {userInfo?.firstname}</h1>
           <span className="text-secondary">Here is the information about all your wallet</span>
         </div>
         <CardBorder>
@@ -134,15 +138,13 @@ const Home: NextPageWithAuth = () => {
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Username</h3>
-                    <span>{`${userInfo.first_name} ${userInfo.last_name}`}</span>
+                    <span>{`${userInfo?.firstname} ${userInfo?.lastname}`}</span>
                   </>
                 </CardBorder>
                 <CardBorder>
                   <>
                     <h3 className="text-xl">Ngày hết hạn</h3>
-                    <span>
-                      {userInfo.expiredAt && _format(userInfo.expiredAt, 'yyyy-mm-dd HH:mm:ss')}
-                    </span>
+                    <span>{userInfo?.expiredAt?.toString()}</span>
                   </>
                 </CardBorder>
                 <CardBorder>
@@ -218,5 +220,9 @@ const Home: NextPageWithAuth = () => {
 }
 
 Home.layout = Layout
+
+Home.auth = {
+  protected: true,
+}
 
 export default Home

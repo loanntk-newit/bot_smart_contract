@@ -10,9 +10,7 @@ declare module 'next' {
     layout?: ({ children }: PropsWithChildren) => ReactElement
     auth?: {
       protected: boolean
-      roles: string[]
       redirect?: string
-      registerStatus?: number[]
     }
   }
 }
