@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { MenuItem } from '.'
 import { Menus } from '../../stores/Menus'
@@ -8,7 +9,8 @@ interface Props {
 }
 
 const SideBar: React.FC<Props> = ({ open, setOpen }) => {
-  const [active, setActive] = useState<string>('')
+  const router = useRouter()
+  const active = router.pathname ?? '/'
 
   return (
     <div
@@ -33,7 +35,6 @@ const SideBar: React.FC<Props> = ({ open, setOpen }) => {
               src={menu.src}
               display={open}
               urls={active}
-              onClick={() => setActive(menu.src)}
             />
           ))}
         </ul>
