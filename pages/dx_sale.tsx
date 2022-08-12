@@ -1,9 +1,10 @@
 import type { NextPageWithAuth } from 'next'
 import { getSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { useEffect, useReducer, useState } from 'react'
 import { ButtonBorderRed } from '../components/Button'
 import { CardBorder } from '../components/Card'
-import { InputAccount } from '../components/Form'
+import { AccountCheckboxGroup, BasicCheckboxGroup, InputAccount } from '../components/Form'
 import Loading from '../components/Loading/Loading'
 import useTitle from '../hooks/useTitle'
 import Layout from '../layouts/Layout'
@@ -39,10 +40,15 @@ function reducer(state: any, action: any) {
   }
 }
 
-const Home: NextPageWithAuth = () => {
+const DxSale: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
-  const [userInfo, setUserInfo] = useState<UserInfo>()
-  useTitle('HOME')
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    first_name: 'Peter',
+    last_name: 'Wish',
+    email: 'kml@gmail.com',
+    expiredAt: 129924492,
+  })
+  useTitle('Dx Sale')
 
   const {
     operation: getWallets,
@@ -91,16 +97,6 @@ const Home: NextPageWithAuth = () => {
   }
 
   useEffect(() => {
-    const init = async () => {
-      const session: any = await getSession()
-      if (session && session?.userInfo) {
-        setUserInfo(session.userInfo.user)
-      }
-    }
-    init()
-  }, [])
-
-  useEffect(() => {
     getWallets()
   }, [dataCreate, dataDel, dataDelAll])
 
@@ -126,92 +122,79 @@ const Home: NextPageWithAuth = () => {
       {(loadedGet || loadedCreate || loadedDelete || loadedDeleteAll) && <Loading />}
       <div className="min-h-[calc(100vh-5rem)] ">
         <div className="mb-3">
-          <h1 className="text-2xl">Welcome Back, {userInfo?.firstname}</h1>
+          <h1 className="text-2xl">Welcome Back, {userInfo.first_name}</h1>
           <span className="text-secondary">Here is the information about all your wallet</span>
         </div>
         <CardBorder>
           <>
-            {/* Billing */}
-            <div className="mb-3">
-              <h2 className="text-2xl mb-2">Billing</h2>
-              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-7">
+            <h1 className="text-2xl">DxSale</h1>
+            <div className="sm:grid sm:grid-cols-3 sm:gap-6 mb-3">
+              <div className="sm:col-span-2">
                 <CardBorder>
                   <>
-                    <h3 className="text-xl">Username</h3>
-                    <span>{`${userInfo?.firstname} ${userInfo?.lastname}`}</span>
+                    <h2 className="text-2xl mb-2">Wallets</h2>
+                    {state.input &&
+                      Object.values(state.input).map((data, i) => (
+                        <InputAccount
+                          key={`render-${state.input[i].id}`}
+                          id={state.input[i].id ?? 0}
+                          // type="password"
+                          label={`Account ${i + 1}: `}
+                          placeholder="Account privateKey"
+                          value={state.input[i].privateKey}
+                          handleRemove={deleteWallet}
+                          handleAdd={handleCreate}
+                          handleChange={(e) =>
+                            dispatch({
+                              type: 'change',
+                              step: i,
+                              key: 'privateKey',
+                              value: e.target.value,
+                            })
+                          }
+                          disabled={wallets && !!wallets[i]?.privateKey}
+                          required
+                        />
+                      ))}
+                    {state.errors && (
+                      <span className="text-red mb-3">
+                        {state.errors?.find((err: any) => err.path === 'privateKey')?.message}
+                      </span>
+                    )}
+
+                    <div className="py-8">
+                      <ButtonBorderRed
+                        text="Remove All"
+                        style=" ml-auto mr-0 sm:max-w-fit"
+                        handleClick={() => deleteAllWallet()}
+                      />
+                    </div>
                   </>
                 </CardBorder>
+              </div>
+              <div className="sm:col-span-1">
                 <CardBorder>
                   <>
-                    <h3 className="text-xl">Ngày hết hạn</h3>
-                    <span>{userInfo?.expiredAt?.toString()}</span>
-                  </>
-                </CardBorder>
-                <CardBorder>
-                  <>
-                    <h3 className="text-xl">Gia hạn</h3>
-                    <span>
-                      Liên hệ{' '}
-                      <a href="" className="text-indigo">
-                        LeonardoDN
-                      </a>{' '}
-                      hoặc tham gia group{' '}
-                      <a href="" className="text-indigo">
-                        gemslab
-                      </a>
-                    </span>
-                  </>
-                </CardBorder>
-                <CardBorder>
-                  <>
-                    <h3 className="text-xl">Action</h3>
-                    <a href="/change_password" className="text-indigo">
-                      Change Password
-                    </a>
+                    <h2 className="text-2xl mb-2">Account</h2>
+
+                    <AccountCheckboxGroup
+                      name={'account'}
+                      label={'privateKey'}
+                      options={wallets}
+                      data={wallets}
+                      onChange={(e: any) => {
+                        console.log(e)
+                      }}
+                    />
+                    {state.errors && (
+                      <span className="text-red mb-3">
+                        {state.errors?.find((err: any) => err.path === 'privateKey')?.message}
+                      </span>
+                    )}
                   </>
                 </CardBorder>
               </div>
             </div>
-            {/* Wallets */}
-            <>
-              <h2 className="text-2xl mb-2">Wallets</h2>
-              {state.input &&
-                Object.values(state.input).map((data, i) => (
-                  <InputAccount
-                    key={`render-${state.input[i].id}`}
-                    id={state.input[i].id ?? 0}
-                    // type="password"
-                    label={`Account ${i + 1}: `}
-                    placeholder="Account privateKey"
-                    value={state.input[i].privateKey}
-                    handleRemove={deleteWallet}
-                    handleAdd={handleCreate}
-                    handleChange={(e) =>
-                      dispatch({
-                        type: 'change',
-                        step: i,
-                        key: 'privateKey',
-                        value: e.target.value,
-                      })
-                    }
-                    disabled={wallets && !!wallets[i]?.privateKey}
-                    required
-                  />
-                ))}
-              {state.errors && (
-                <span className="text-red mb-3">
-                  {state.errors?.find((err: any) => err.path === 'privateKey')?.message}
-                </span>
-              )}
-
-              <div className="py-8">
-                <ButtonBorderRed
-                  text="Remove All"
-                  style=" ml-auto mr-0 sm:max-w-fit"
-                  handleClick={() => deleteAllWallet()}
-                />
-              </div>
-            </>
           </>
         </CardBorder>
       </div>
@@ -219,10 +202,6 @@ const Home: NextPageWithAuth = () => {
   )
 }
 
-Home.layout = Layout
+DxSale.layout = Layout
 
-Home.auth = {
-  protected: true,
-}
-
-export default Home
+export default DxSale

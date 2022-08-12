@@ -1,7 +1,7 @@
 export type UserInfo = {
   id?: number
-  first_name?: string | null
-  last_name?: string | null
+  firstname?: string | null
+  lastname?: string | null
   email?: string | null
   expiredAt?: number | Date
 }

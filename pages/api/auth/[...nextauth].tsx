@@ -11,12 +11,12 @@ export default NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const res: any = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/signin`, {
+        const res: any = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
           email: credentials?.username,
           password: credentials?.password,
         })
-        const user = res.data.data
-        if (res.status === 200 && user) {
+        const user = res.data
+        if (res) {
           return user
         }
         return null
@@ -27,7 +27,7 @@ export default NextAuth({
     async jwt({ token, account, user }: any) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
-        const expiresIn: any = user ? user.expires_in : 0
+        const expiresIn: any = user ? user.expiredAt : 0
         token.userInfo = user
         token.accessTokenExpires = Date.now() + expiresIn * 1000
       }

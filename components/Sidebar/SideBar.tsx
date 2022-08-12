@@ -1,4 +1,6 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { Dispatch, SetStateAction } from 'react'
 import { MenuItem } from '.'
 import { Menus } from '../../stores/Menus'
 
@@ -8,7 +10,8 @@ interface Props {
 }
 
 const SideBar: React.FC<Props> = ({ open, setOpen }) => {
-  const [active, setActive] = useState<string>('')
+  const router = useRouter()
+  const active = router.pathname ?? '/'
 
   return (
     <div
@@ -33,17 +36,16 @@ const SideBar: React.FC<Props> = ({ open, setOpen }) => {
               src={menu.src}
               display={open}
               urls={active}
-              onClick={() => setActive(menu.src)}
             />
           ))}
         </ul>
       </div>
       <div>
         <li className={`flex p-2 cursor-pointer items-center gap-x-4 mt-2 text-red`}>
-          <a href={'/logout'} className="flex items-center gap-4">
+          <button onClick={() => signOut()} className="flex items-center gap-4">
             <img src={`/imgs/logout.svg`} alt={'Logout'} />
             <span className={`${!open && 'hidden'} duration-200 `}>Logout</span>
-          </a>
+          </button>
         </li>
       </div>
     </div>
