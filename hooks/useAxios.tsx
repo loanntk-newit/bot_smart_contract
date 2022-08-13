@@ -20,6 +20,7 @@ const useAxios = (url: string, method: Method, body: any) => {
         const accessToken = userInfo?.accessToken
         config = {
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
         }
