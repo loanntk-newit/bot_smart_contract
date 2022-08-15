@@ -194,6 +194,7 @@ const Home: NextPageWithAuth = () => {
                         value: e.target.value,
                       })
                     }
+                    note={'Address: N/A - Balance: N/A BNB'}
                     disabled={wallets && !!wallets[i]?.privateKey}
                     required
                   />

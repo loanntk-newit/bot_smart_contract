@@ -1,5 +1,5 @@
 import axios, { Method } from 'axios'
-import { useSession } from 'next-auth/react'
+import { getSession } from 'next-auth/react'
 import { useState } from 'react'
 
 const useAxios = (url: string, method: Method, body: any) => {
@@ -8,12 +8,12 @@ const useAxios = (url: string, method: Method, body: any) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<any>()
   const [error, setError] = useState<any | null>()
-  const { status, data: session } = useSession()
 
   const operation = async (param?: string | number | null) => {
     setLoading(true)
     setError(null)
     try {
+      const session = await getSession()
       let config
       if (session) {
         const { userInfo }: any = session

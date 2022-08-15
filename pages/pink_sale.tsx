@@ -40,10 +40,10 @@ function reducer(state: any, action: any) {
   }
 }
 
-const DxSale: NextPageWithAuth = () => {
+const PinkSale: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
   const [userInfo, setUserInfo] = useState<UserInfo>()
-  useTitle('Dx Sale')
+  useTitle('Pink Sale')
 
   const {
     operation: getWallets,
@@ -112,7 +112,7 @@ const DxSale: NextPageWithAuth = () => {
         </div>
         <CardBorder>
           <>
-            <h1 className="text-2xl">DxSale</h1>
+            <h1 className="text-2xl">PinkSale</h1>
             <div className="grid sm:grid-cols-3 gap-6 mb-3">
               <div className="sm:col-span-2">
                 <CardBorder>
@@ -242,10 +242,10 @@ const DxSale: NextPageWithAuth = () => {
   )
 }
 
-DxSale.layout = Layout
+PinkSale.layout = Layout
 
-DxSale.auth = {
+PinkSale.auth = {
   protected: true,
 }
 
-export default DxSale
+export default PinkSale

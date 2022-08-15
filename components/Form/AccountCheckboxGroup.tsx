@@ -62,7 +62,7 @@ const AccountCheckboxGroup: React.FC<Props> = ({ name, data, label, options, onC
                 onChange={() => handleOnChange(elm.id)}
               />
               <label className="form-check-label inline-block" htmlFor={`${name}-${i}`}>
-                {elm[label]}
+                Account {i + 1} - 0.0 <b>BNB</b>
               </label>
             </div>
           )
