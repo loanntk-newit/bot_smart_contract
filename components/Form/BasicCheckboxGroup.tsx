@@ -55,14 +55,14 @@ const BasicCheckboxGroup: React.FC<Props> = ({ name, data, label, options, onCha
               <input
                 className="form-check-input h-4 w-4 border border-system-grey-500 rounded-[5px] checked:bg-primary-origin checked:border-primary-origin focus:outline-none transition duration-200 mr-2 cursor-pointer"
                 type="checkbox"
-                value={elm.id}
+                value={elm}
                 id={`${name}-${i}`}
-                name={elm[label]}
-                checked={isChecked(elm.id)}
-                onChange={() => handleOnChange(elm.id)}
+                name={elm}
+                checked={isChecked(elm)}
+                onChange={() => handleOnChange(elm)}
               />
               <label className="form-check-label inline-block" htmlFor={`${name}-${i}`}>
-                {elm[label]}
+                {label} <b>{elm}</b>
               </label>
             </div>
           )
