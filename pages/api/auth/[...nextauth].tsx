@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import axios from 'axios'
-import { signOut } from 'next-auth/react'
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -29,7 +28,7 @@ export default NextAuth({
       if (account) {
         const expiresIn: any = user ? user?.user?.expiredAt : 0
         token.userInfo = user
-        token.accessTokenExpires = Date.now() + Date.parse(expiresIn) * 1000
+        token.accessTokenExpires = Date.parse(expiresIn)
       }
       // Return previous token if the access token has not expired yet
       if (Date.now() > token.accessTokenExpires) {

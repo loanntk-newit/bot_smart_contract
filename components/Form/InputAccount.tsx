@@ -28,7 +28,7 @@ const InputAccount: React.FC<Props> = ({
   handleRemove,
 }) => {
   return (
-    <div className="flex gap-2 items-center justify-between ">
+    <div className="flex gap-2 items-end justify-between ">
       <BasicInput
         type={type}
         label={label}
