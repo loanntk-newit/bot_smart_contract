@@ -24,8 +24,8 @@ const SideBar: React.FC<Props> = ({ open, setOpen }) => {
       </div>
       <div>
         <div className="flex gap-x-4 items-center">
-          <img src="/imgs/logo.svg" alt="Logo" />
-          <h1 className={`font-medium text-xl duration-200 ${!open && 'scale-0'}`}>Logo</h1>
+          <img src="/imgs/logo.png" alt="Logo" className="w-[30px]" />
+          <h1 className={`font-medium text-xl duration-200 ${!open && 'scale-0'}`}>BOT</h1>
         </div>
         <ul className="pt-6">
           {Menus.map((menu, index) => (
