@@ -7,8 +7,8 @@ const Header = () => {
       <div className="container px-4 mx-auto">
         <Link href="/">
           <div className="flex gap-x-4 items-center justify-center">
-            <img src="/imgs/logo.svg" alt="Logo" />
-            <h1 className="font-medium text-xl ">Logo</h1>
+            <img src="/imgs/logo.png" alt="Logo" className="w-[30px]" />
+            <h1 className="font-medium text-xl ">BOT</h1>
           </div>
         </Link>
       </div>
