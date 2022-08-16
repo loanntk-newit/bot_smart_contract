@@ -28,10 +28,10 @@ export default NextAuth({
       if (account) {
         const expiresIn: any = user ? user?.user?.expiredAt : 0
         token.userInfo = user
-        token.accessTokenExpires = Date.parse(expiresIn)
+        token.expires = new Date(expiresIn).toISOString()
       }
       // Return previous token if the access token has not expired yet
-      if (Date.now() > token.accessTokenExpires) {
+      if (Date.now() > token.expires) {
         return null
       }
       return token
@@ -39,7 +39,7 @@ export default NextAuth({
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
       session.userInfo = token.userInfo
-      session.accessTokenExpires = token.accessTokenExpires
+      session.expires = token?.expires ? token.expires.toString() : new Date().toISOString()
       return session
     },
   },
