@@ -11,6 +11,7 @@ import _format from 'date-fns/format'
 import useAxios from '../hooks/useAxios'
 import { UserInfo, Wallet } from '../models'
 import * as yup from 'yup'
+import MetaMask from '../components/Connecter/MetaMask'
 
 const initInputState = {
   input: [
@@ -72,7 +73,11 @@ const Home: NextPageWithAuth = () => {
 
   const handleCreate = () => {
     let schema = yup.object().shape({
-      privateKey: yup.string().required().label('privateKey'),
+      privateKey: yup
+        .string()
+        .required()
+        .length(64, 'Private key length is invalid!')
+        .label('privateKey'),
     })
 
     schema
@@ -177,27 +182,28 @@ const Home: NextPageWithAuth = () => {
               <h2 className="text-2xl mb-2">Wallets</h2>
               {state.input &&
                 Object.values(state.input).map((data, i) => (
-                  <InputAccount
-                    key={`render-${state.input[i].id}`}
-                    id={state.input[i].id ?? 0}
-                    // type="password"
-                    label={`Account ${i + 1}: `}
-                    placeholder="Account privateKey"
-                    value={state.input[i].privateKey}
-                    handleRemove={deleteWallet}
-                    handleAdd={handleCreate}
-                    handleChange={(e) =>
-                      dispatch({
-                        type: 'change',
-                        step: i,
-                        key: 'privateKey',
-                        value: e.target.value,
-                      })
-                    }
-                    note={'Address: N/A - Balance: N/A BNB'}
-                    disabled={wallets && !!wallets[i]?.privateKey}
-                    required
-                  />
+                  <div key={`render-${state.input[i].id}`}>
+                    <InputAccount
+                      id={state.input[i].id ?? 0}
+                      // type="password"
+                      label={`Account ${i + 1}: `}
+                      placeholder="Account privateKey"
+                      value={state.input[i].privateKey}
+                      handleRemove={deleteWallet}
+                      handleAdd={handleCreate}
+                      handleChange={(e) =>
+                        dispatch({
+                          type: 'change',
+                          step: i,
+                          key: 'privateKey',
+                          value: e.target.value,
+                        })
+                      }
+                      disabled={wallets && !!wallets[i]?.privateKey}
+                      required
+                    />
+                    {wallets && <MetaMask primaryKey={wallets[i]?.privateKey} />}
+                  </div>
                 ))}
               {state.errors && (
                 <span className="text-red mb-3">

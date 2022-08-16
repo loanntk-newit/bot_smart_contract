@@ -1,6 +1,3 @@
-import '@fullcalendar/common/main.css'
-import '@fullcalendar/daygrid/main.css'
-import 'rc-time-picker/assets/index.css'
 import '../styles/globals.css'
 import type { PropsWithChildren } from 'next'
 import type { AppPropsWithLayout } from 'next/app'

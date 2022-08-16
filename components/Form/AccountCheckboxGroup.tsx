@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import MetaMaskLabelCheckbox from '../Connecter/MetaMaskLabelCheckbox'
 
 interface Props {
   name: string
@@ -49,6 +50,7 @@ const AccountCheckboxGroup: React.FC<Props> = ({ name, data, label, options, onC
   return (
     <>
       {options &&
+        options.length > 0 &&
         options.map(function (elm: any, i: number) {
           return (
             <div className="flex items-center form-check py-2" key={`${name}-${i}`}>
@@ -62,7 +64,7 @@ const AccountCheckboxGroup: React.FC<Props> = ({ name, data, label, options, onC
                 onChange={() => handleOnChange(elm.id)}
               />
               <label className="form-check-label inline-block" htmlFor={`${name}-${i}`}>
-                Account {i + 1} - 0.0 <b>BNB</b>
+                <MetaMaskLabelCheckbox primaryKey={Object.values(elm).toString()} />
               </label>
             </div>
           )

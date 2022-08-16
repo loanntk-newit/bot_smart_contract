@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const withTM = require('next-transpile-modules')([
-  '@fullcalendar/common',
-  '@fullcalendar/daygrid',
-  '@fullcalendar/react',
 ])
 
 const nextConfig = withTM({

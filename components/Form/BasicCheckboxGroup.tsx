@@ -49,6 +49,7 @@ const BasicCheckboxGroup: React.FC<Props> = ({ name, data, label, options, onCha
   return (
     <>
       {options &&
+        options.length > 0 &&
         options.map(function (elm: any, i: number) {
           return (
             <div className="flex items-center form-check py-2" key={`${name}-${i}`}>
