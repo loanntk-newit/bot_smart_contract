@@ -26,9 +26,9 @@ export default NextAuth({
     async jwt({ token, account, user }: any) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
-        const expiresIn: any = user ? user?.user?.expiredAt : 0
+        // const expiresIn: any = user ? user?.user?.expiredAt : 0
         token.userInfo = user
-        token.expires = new Date(expiresIn).toISOString()
+        token.expires = Date.now() + 60 * 60 * 1000
       }
       // Return previous token if the access token has not expired yet
       if (Date.now() > token.expires) {
@@ -39,7 +39,6 @@ export default NextAuth({
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
       session.userInfo = token.userInfo
-      session.expires = token?.expires ? token.expires.toString() : new Date().toISOString()
       return session
     },
   },
