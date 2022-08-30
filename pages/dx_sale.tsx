@@ -15,7 +15,7 @@ import { TimeStarts } from '../stores/TimeStarts'
 
 const initInputState = {
   input: {
-    presaleContract: '',
+    saleAddress: '',
     bnbAmount: 0,
     gasPrice: 0,
     gasLimit: 0,
@@ -65,7 +65,7 @@ const DxSale: NextPageWithAuth = () => {
 
   const handleBuy = () => {
     let schema = yup.object().shape({
-      presaleContract: yup.string().required().label('Presale Contract'),
+      saleAddress: yup.string().required().label('Presale Contract'),
       bnbAmount: yup.string().required().label('BNB Amount'),
       gasPrice: yup.number().required().label('Gas Price'),
       gasLimit: yup.number().required().label('Gas Limit'),
@@ -120,27 +120,25 @@ const DxSale: NextPageWithAuth = () => {
                     <BasicInput
                       label="Presale Contract"
                       placeholder="0xaCD....."
-                      value={state.input.presaleContract ?? ''}
+                      value={state.input.saleAddress ?? ''}
                       required
                       onChange={(e) =>
                         dispatch({
                           type: 'change',
-                          key: 'presaleContract',
+                          key: 'saleAddress',
                           value: e.target.value,
                         })
                       }
-                      error={
-                        state.errors?.find((err: any) => err.path === 'presaleContract')?.message
-                      }
+                      error={state.errors?.find((err: any) => err.path === 'saleAddress')?.message}
                     />
-                    <div className="flex flex-col md:flex-row justify-between mb-3">
+                    {/* <div className="flex flex-col md:flex-row justify-between mb-3">
                       <span>
                         <b>Start at:</b> 05 Aug 2022 at 07:00 pm
                       </span>
                       <span>
                         <b>Countdown:</b> 3:5:49:12
                       </span>
-                    </div>
+                    </div> */}
                     <BasicInput
                       type="number"
                       label="BNB amount"
