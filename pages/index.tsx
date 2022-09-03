@@ -148,21 +148,16 @@ const Home: NextPageWithAuth = () => {
                 </CardBorder>
                 <CardBorder>
                   <>
-                    <h3 className="text-xl">Ngày hết hạn</h3>
-                    <span>{userInfo?.expiredAt?.toString()}</span>
+                    <h3 className="text-xl">Expiration Date</h3>
+                    <span>Forever</span>
                   </>
                 </CardBorder>
                 <CardBorder>
                   <>
-                    <h3 className="text-xl">Gia hạn</h3>
+                    <h3 className="text-xl">Contact</h3>
                     <span>
-                      Liên hệ{' '}
-                      <a href="" className="text-indigo">
-                        LeonardoDN
-                      </a>{' '}
-                      hoặc tham gia group{' '}
-                      <a href="" className="text-indigo">
-                        gemslab
+                      <a href="https://t.me/TnT_Super_Bot" className="text-indigo">
+                        TnT BOT
                       </a>
                     </span>
                   </>
