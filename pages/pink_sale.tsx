@@ -12,6 +12,7 @@ import useAxios from '../hooks/useAxios'
 import { UserInfo } from '../models'
 import * as yup from 'yup'
 import { TimeStarts } from '../stores/TimeStarts'
+import Router from 'next/router'
 
 const initInputState = {
   input: {
@@ -52,6 +53,12 @@ const PinkSale: NextPageWithAuth = () => {
   } = useAxios('/wallets', 'GET', null)
 
   const {
+    operation: getOrderInfo,
+    data: orderInfo,
+    loading: loadedOrderInfo,
+  } = useAxios('/orderInfo', 'GET', null)
+
+  const {
     operation: startCommand,
     data: startBuyCommand,
     loading: loadedStart,
@@ -90,21 +97,32 @@ const PinkSale: NextPageWithAuth = () => {
         setUserInfo(session.userInfo.user)
       }
       getWallets()
+      getOrderInfo()
     }
     init()
   }, [])
 
   useEffect(() => {
-    if (startBuyCommand) alert('Start Buy Command is successfully!')
+    orderInfo?.order && dispatch({ type: 'refresh-data', values: orderInfo.order })
+  }, [orderInfo])
+
+  useEffect(() => {
+    if (startBuyCommand) {
+      alert('Start Buy Command is successfully!')
+      Router.reload()
+    }
   }, [startBuyCommand])
 
   useEffect(() => {
-    if (stopBuyCommand) alert('Stop Buy Command is successfully!')
+    if (stopBuyCommand) {
+      alert('Stop Buy Command is successfully!')
+      Router.reload()
+    }
   }, [stopBuyCommand])
 
   return (
     <>
-      {(loadedGet || loadedStart || loadedStop) && <Loading />}
+      {(loadedGet || loadedStart || loadedStop || loadedOrderInfo) && <Loading />}
       <div className="min-h-[calc(100vh-5rem)] ">
         <div className="mb-3">
           <h1 className="text-2xl">Welcome Back, {userInfo?.firstname}</h1>
@@ -189,6 +207,7 @@ const PinkSale: NextPageWithAuth = () => {
                       name={'timeStarts'}
                       label={'By at'}
                       options={TimeStarts}
+                      data={state.input.timeStarts}
                       onChange={(e) =>
                         dispatch({
                           type: 'change',
@@ -201,11 +220,13 @@ const PinkSale: NextPageWithAuth = () => {
                       <ButtonBorderIndigo
                         text="Buy"
                         style=" sm:max-w-fit"
+                        disabled={!!orderInfo?.order}
                         handleClick={() => handleBuy()}
                       />
                       <ButtonBorderRed
                         text="Stop"
                         style=" sm:max-w-fit"
+                        disabled={!orderInfo?.order}
                         handleClick={() => stopCommand()}
                       />
                     </div>
