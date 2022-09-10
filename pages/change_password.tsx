@@ -14,8 +14,9 @@ import * as yup from 'yup'
 
 const initInputState = {
   input: {
-    newPassword: '',
-    confirmPassword: '',
+    old_password: '',
+    new_password: '',
+    re_new_password: '',
   },
   errors: [],
 }
@@ -40,15 +41,15 @@ const ChangePassword: NextPageWithAuth = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
   useTitle('Change Password')
 
-  const { operation: change, loading: load } = useAxios('/change_password', 'POST', state.input)
+  const { operation: change, loading: load } = useAxios('/changePassword', 'POST', state.input)
 
   const changePassword = () => {
     let schema = yup.object().shape({
-      newPassword: yup.string().required().label('New Password'),
-      confirmPassword: yup
+      new_password: yup.string().required().label('New Password'),
+      re_new_password: yup
         .string()
         .required()
-        .oneOf([yup.ref('newPassword'), null], 'Passwords must match')
+        .oneOf([yup.ref('new_password'), null], 'Passwords must match')
         .label('Confirm Password'),
     })
 
@@ -88,33 +89,48 @@ const ChangePassword: NextPageWithAuth = () => {
             <>
               <h2 className="text-2xl mb-2">Change Password</h2>
               <BasicInput
-                label="New Password"
+                label="Old Password"
                 type="password"
-                placeholder="New Password"
-                value={state.input.newPassword}
+                placeholder="Old Password"
+                value={state.input.old_password}
                 onChange={(e) =>
                   dispatch({
                     type: 'change',
-                    key: 'newPassword',
+                    key: 'old_password',
                     value: e.target.value,
                   })
                 }
-                error={state.errors?.find((err: any) => err.path === 'newPassword')?.message}
+                error={state.errors?.find((err: any) => err.path === 'old_password')?.message}
+                required
+              />
+              <BasicInput
+                label="New Password"
+                type="password"
+                placeholder="New Password"
+                value={state.input.new_password}
+                onChange={(e) =>
+                  dispatch({
+                    type: 'change',
+                    key: 'new_password',
+                    value: e.target.value,
+                  })
+                }
+                error={state.errors?.find((err: any) => err.path === 'new_password')?.message}
                 required
               />
               <BasicInput
                 label="Confirm Password"
                 type="password"
                 placeholder="Confirm Password"
-                value={state.input.confirmPassword}
+                value={state.input.re_new_password}
                 onChange={(e) =>
                   dispatch({
                     type: 'change',
-                    key: 'confirmPassword',
+                    key: 're_new_password',
                     value: e.target.value,
                   })
                 }
-                error={state.errors?.find((err: any) => err.path === 'confirmPassword')?.message}
+                error={state.errors?.find((err: any) => err.path === 're_new_password')?.message}
                 required
               />
 
