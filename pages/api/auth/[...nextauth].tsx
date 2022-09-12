@@ -15,7 +15,7 @@ export default NextAuth({
           password: credentials?.password,
         })
         const user = res.data
-        if (res) {
+        if (res.data.user) {
           return user
         }
         return null

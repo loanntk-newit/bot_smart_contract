@@ -1,5 +1,5 @@
 import type { NextPageWithAuth } from 'next'
-import { getSession } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
 import { useEffect, useReducer, useState } from 'react'
 import { ButtonBorderIndigo } from '../components/Button'
 import { CardBorder } from '../components/Card'
@@ -39,12 +39,19 @@ function reducer(state: any, action: any) {
 const ChangePassword: NextPageWithAuth = () => {
   const [state, dispatch] = useReducer(reducer, initInputState)
   const [userInfo, setUserInfo] = useState<UserInfo>()
+  const [err, setErr] = useState<String | null>(null)
   useTitle('Change Password')
 
-  const { operation: change, loading: load } = useAxios('/changePassword', 'POST', state.input)
+  const {
+    operation: change,
+    data,
+    loading: load,
+  } = useAxios('/changePassword', 'POST', state.input)
 
   const changePassword = () => {
+    setErr(null)
     let schema = yup.object().shape({
+      old_password: yup.string().required().label('Old Password'),
       new_password: yup.string().required().label('New Password'),
       re_new_password: yup
         .string()
@@ -75,6 +82,15 @@ const ChangePassword: NextPageWithAuth = () => {
     init()
   }, [])
 
+  useEffect(() => {
+    if (data?.status === 'success') {
+      alert('Your password has been changed. Please log in again!')
+      signOut()
+    } else {
+      setErr(data?.err)
+    }
+  }, [data])
+
   return (
     <>
       {load && <Loading />}
@@ -100,7 +116,9 @@ const ChangePassword: NextPageWithAuth = () => {
                     value: e.target.value,
                   })
                 }
-                error={state.errors?.find((err: any) => err.path === 'old_password')?.message}
+                error={
+                  state.errors?.find((err: any) => err.path === 'old_password')?.message || err
+                }
                 required
               />
               <BasicInput
